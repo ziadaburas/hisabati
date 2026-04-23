@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "326847435666",
+    "project_id": "own7xledger",
+    "storage_bucket": "own7xledger.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:326847435666:android:f27535f38a1310f541a74b",
+        "android_client_info": {
+          "package_name": "com.own7x.accounts"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "326847435666-ltvj65ulrcetgcdutb03j3p0ec11imqj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.own7x.accounts",
+            "certificate_hash": "c82d2a85611885b76b91d0a210ca3c1d84b70adc"
+          }
+        },
+        {
+          "client_id": "326847435666-auu02hcqcqmrn50mr35do76ph8svs0a2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD1YsS6Xh1nO5V2hIfkJJH_pyLTL-iI1t0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "326847435666-auu02hcqcqmrn50mr35do76ph8svs0a2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

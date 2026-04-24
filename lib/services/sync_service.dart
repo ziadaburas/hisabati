@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-import '/controllers/entries_controller.dart';
+import '../controllers/entries_controller.dart';
 import '../models/entry_model.dart';
 import 'database_service.dart';
 import 'google_drive_service.dart';

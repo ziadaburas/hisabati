@@ -9,12 +9,16 @@ import '../../theme/app_theme.dart';
 import '../add_entry/add_entry_view.dart';
 
 class EntriesView extends StatelessWidget {
-  const EntriesView({super.key});
+   EntriesView({super.key});
+  var isDark = false;
+  final amountFormatter = NumberFormat('#,##0', 'en_US');
+    final dateFormatter = DateFormat('dd/MM/yyyy', 'en_US');
 
   @override
   Widget build(BuildContext context) {
     final entriesController = Get.find<EntriesController>();
     final authController = Get.find<AuthController>();
+    isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Directionality(
       textDirection: ui.TextDirection.rtl,
@@ -43,11 +47,12 @@ class EntriesView extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
             itemCount: entriesController.entries.length,
             itemBuilder: (context, index) {
-              return _buildEntryCard(
+              return _buildEntryTile(
                 context,
                 entriesController.entries[index],
                 entriesController,
                 authController,
+                index == 0 ?null : entriesController.entries[index-1],
               );
             },
           ),
@@ -97,6 +102,181 @@ class EntriesView extends StatelessWidget {
       ),
     );
   }
+   Widget _buildEntryTile(
+    BuildContext context,
+    EntryModel entry,
+    EntriesController entriesController,
+    AuthController authController,
+    EntryModel? lastEntry
+
+  ) {
+    final currentItem = entry;
+    
+    // متغير لتحديد هل نظهر الفاصل الزمني أم لا
+    bool showDateHeader = false;
+
+    // إذا كان هذا أول عنصر في القائمة، نظهر التاريخ دائماً
+    if (lastEntry == null) {
+      showDateHeader = true;
+    } else {
+      // نقارن تاريخ العنصر الحالي بالعنصر الذي قبله
+      final previousItem = lastEntry;
+      
+      // ملاحظة: تأكد من مقارنة التاريخ فقط (يوم/شهر/سنة) بدون الوقت
+      if (currentItem.date.toString().split(" ").first != previousItem.date.toString().split(" ").first) {
+        showDateHeader = true;
+      }
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+
+      children: [
+        if (showDateHeader)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+              child: Text(
+                currentItem.date.toString().split(" ").first,
+                textAlign: ui.TextAlign.left,
+                style:const TextStyle( fontWeight: FontWeight.bold),
+              ),
+          
+          ),
+    
+     Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      elevation: isDark ? 0 : 1,
+      color: isDark ? AppColors.darkCard : null,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: isDark ? BorderSide(color: AppColors.darkDivider) : BorderSide.none,
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () => Get.to(() => AddEntryView(editEntry: entry)),
+        child: Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border(
+              right: BorderSide(
+                color: entry.isCredit
+                    ? AppColors.success
+                    : AppColors.error,
+                width: 4,
+              ),
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: entry.isCredit
+                      ? AppColors.success.withOpacity(0.1)
+                      : AppColors.error.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  entry.isCredit
+                      ? Icons.arrow_upward_rounded
+                      : Icons.arrow_downward_rounded,
+                  color: entry.isCredit
+                      ? AppColors.success
+                      : AppColors.error,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                           entry.customerName.isNotEmpty
+                                ? entry.customerName
+                                : 'بدون اسم',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                            fontFamily: 'myfont',
+                            color: entry.isCredit
+                                ? AppColors.success
+                                : AppColors.error,
+                          ),
+                        ),
+                        Text(
+                          '${entry.isCredit ? '+' : '-'}${amountFormatter.format(entry.amount)}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            fontFamily: 'myfont',
+                            color: entry.isCredit
+                                ? AppColors.success
+                                : AppColors.error,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(Icons.calendar_today_rounded,
+                            size: 12, color: isDark ? AppColors.darkTextSecondary : Colors.grey.shade500),
+                        const SizedBox(width: 4),
+                        Text(
+                          dateFormatter.format(entry.date),
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontFamily: 'myfont',
+                            color: isDark ? AppColors.darkTextSecondary : Colors.grey.shade500,
+                          ),
+                        ),
+                        if (entry.note.isNotEmpty) ...[
+                          const SizedBox(width: 10),
+                          Icon(Icons.note_rounded,
+                              size: 12, color: isDark ? AppColors.darkTextSecondary : Colors.grey.shade500),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              entry.note,
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontFamily: 'myfont',
+                                color: isDark ? AppColors.darkTextSecondary : Colors.grey.shade500,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 4),
+              IconButton(
+                onPressed: () => _confirmDelete(
+                    context, entry, entriesController, authController,),
+                icon: Icon(Icons.delete_outline_rounded,
+                    color: Colors.red.shade300, size: 20),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+              ),
+            ],
+          ),
+        ),
+      ),
+    )
+      ]
+    );
+  }
+
 
   Widget _buildEntryCard(
     BuildContext context,
@@ -107,12 +287,12 @@ class EntriesView extends StatelessWidget {
     final dateFormatter = DateFormat('dd/MM/yyyy', 'en_US');
     final amountFormatter = NumberFormat('#,##0.##', 'en_US');
     final isCredit = entry.isCredit;
-    final color = isCredit ? AppColors.success : AppColors.error;
+    final color = isCredit ? const ui.Color.fromRGBO(34, 197, 94, 1) : AppColors.error;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
-        color: AppColors.cardBackground,
+      color: isDark ? AppColors.darkCard : null,
         borderRadius: BorderRadius.circular(14),
         boxShadow: AppShadows.cardShadow,
         border: Border(
@@ -240,8 +420,46 @@ class EntriesView extends StatelessWidget {
       ),
     );
   }
+  void _confirmDelete(BuildContext context, EntryModel entry,
+      EntriesController controller, AuthController authController) {
+    Get.defaultDialog(
+      title: 'حذف القيد',
+      titleStyle: TextStyle(
+        fontWeight: FontWeight.bold,
+        fontFamily: 'myfont',
+        color: isDark ? AppColors.darkTextPrimary : null,
+      ),
+      middleText:
+          'هل أنت متأكد من حذف هذا القيد؟\n\n${entry.isCredit ? "لي" : "عليا"} - ${entry.amount}',
+      middleTextStyle: TextStyle(
+        fontFamily: 'myfont',
+        color: isDark ? AppColors.darkTextSecondary : null,
+      ),
+      backgroundColor: isDark ? AppColors.darkCard : Colors.white,
+      textConfirm: 'حذف',
+      textCancel: 'إلغاء',
+      confirmTextColor: Colors.white,
+      buttonColor: Colors.red,
+      cancelTextColor: AppColors.primaryMedium,
+      onConfirm: () {
+        final userId = authController.user.value?.uid;
+        if (userId != null) {
+          controller.deleteEntry(userId, entry.id);
+          Get.back();
+          Get.snackbar(
+            'تم الحذف',
+            'تم حذف القيد بنجاح',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+            duration: const Duration(seconds: 2),
+          );
+        }
+      },
+    );
+  }
 
-  void _confirmDelete(
+  void _confirmDelete1(
     BuildContext context,
     EntryModel entry,
     EntriesController controller,

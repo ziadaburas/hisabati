@@ -8,12 +8,14 @@ import '../../theme/app_theme.dart';
 import '../customer_entries/customer_entries_view.dart';
 
 class CustomersView extends StatelessWidget {
-  const CustomersView({super.key});
+   CustomersView({super.key});
+   var isDark = false;
+   final amountFormatter = NumberFormat('#,##0.##', 'en_US');
 
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<EntriesController>();
-    final amountFormatter = NumberFormat('#,##0.##', 'en_US');
+    isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Directionality(
       textDirection: ui.TextDirection.rtl,
@@ -35,7 +37,7 @@ class CustomersView extends StatelessWidget {
           itemCount: customers.length,
           itemBuilder: (context, index) {
             final customer = customers[index].value;
-            return _buildCustomerCard(context, customer, amountFormatter);
+            return _buildEntryTile(context, customer);
           },
         );
       }),
@@ -112,7 +114,7 @@ class CustomersView extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
-        color: AppColors.cardBackground,
+        color: isDark ? AppColors.darkCard : AppColors.cardBackground,
         borderRadius: BorderRadius.circular(14),
         boxShadow: AppShadows.cardShadow,
       ),
@@ -154,11 +156,11 @@ class CustomersView extends StatelessWidget {
                         Expanded(
                           child: Text(
                             customer.name,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 15,
                               fontFamily: 'myfont',
-                              color: AppColors.textPrimary,
+                              color: isDark ? Colors.white:Colors.black,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -250,6 +252,180 @@ class CustomersView extends StatelessWidget {
                 size: 14,
                 color: AppColors.mediumGray,
               ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+    
+    Widget _buildEntryTile(
+    BuildContext context,
+    CustomerSummary customer,
+   
+  ) {
+    final colors = [
+      AppColors.primaryMedium,
+      const Color(0xFF2E86AB),
+      const Color(0xFF8B5E3C),
+      const Color(0xFF6B4C93),
+      AppColors.warning,
+    ];
+    final colorIndex = customer.name.isEmpty ? 0 : customer.name.codeUnitAt(0) % colors.length;
+    final avatarColor = colors[colorIndex];
+
+     final balance = customer.totalCredit - customer.totalDebit;
+    final isPositive = balance >= 0;
+    final balanceColor = isPositive ? AppColors.success : AppColors.error;
+    final initial = customer.name.isNotEmpty
+        ? customer.name[0].toUpperCase()
+        : '?';
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      elevation: isDark ? 0 : 1,
+      color: isDark ? AppColors.darkCard : null,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: isDark ? BorderSide(color: AppColors.darkDivider) : BorderSide.none,
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () => Get.to(() => CustomerEntriesView(customerName: customer.name)),
+        child: Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border(
+              right: BorderSide(
+                color: balanceColor,
+                width: 4,
+              ),
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: avatarColor,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Center(
+                  child: Text(
+                    initial,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                      fontFamily: 'myfont',
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                           customer.name,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                            fontFamily: 'myfont',
+                            color:balanceColor,
+                          ),
+                        ),
+                        // Text(
+                        //  "ccc",
+                        //   style: TextStyle(
+                        //     fontWeight: FontWeight.bold,
+                        //     fontSize: 16,
+                        //     fontFamily: 'myfont',
+                        //     color: balanceColor,
+                        //   ),
+                        // ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(Icons.receipt_long_outlined,
+                            size: 12, color: isDark ? AppColors.darkTextSecondary : Colors.grey.shade500),
+                        const SizedBox(width: 4),
+                        Text(
+                        '${customer.entryCount} قيد',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontFamily: 'myfont',
+                            color: isDark ? AppColors.darkTextSecondary : Colors.grey.shade500,
+                          ),
+                        ),
+                        const SizedBox(width: 14),
+                        // Credit
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                            color: AppColors.success,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          amountFormatter.format(customer.totalCredit),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: AppColors.success,
+                            fontFamily: 'myfont',
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        // Debit
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                            color: AppColors.error,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          amountFormatter.format(customer.totalDebit),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: AppColors.error,
+                            fontFamily: 'myfont',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 4),
+              Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: balanceColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            '${isPositive ? '+' : ''}${amountFormatter.format(balance)}',
+                            style: TextStyle(
+                              color: balanceColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                              fontFamily: 'myfont',
+                            ),
+                          ),
+                        ),
             ],
           ),
         ),

@@ -34,7 +34,11 @@ class PdfService {
     
     final ttf = pw.Font.ttf(fontData);
     final ttfBold = pw.Font.ttf(fontDataBold);
+    final ByteData imageBytes = await rootBundle.load('assets/accounts_logo_light.png');
+    final Uint8List imageData = imageBytes.buffer.asUint8List();
 
+    // 2. تحويل البيانات إلى صورة تفهمها مكتبة الـ PDF
+    final pw.MemoryImage pdfImage = pw.MemoryImage(imageData);
     // التاريخ مع الوقت
     final dateFormatter = DateFormat('dd/MM/yyyy HH:mm');
     final amountFormatter = NumberFormat('#,##0');
@@ -68,6 +72,7 @@ class PdfService {
           fromDate,
           toDate,
           dateFormatter,
+          pdfImage
         ),
 
         footer: (context) => _buildFooter(context),
@@ -241,30 +246,36 @@ class PdfService {
     DateTime? fromDate,
     DateTime? toDate,
     DateFormat dateFormatter,
+    pw.ImageProvider pdfImage
   ) {
 
     return pw.Container(
       margin: const pw.EdgeInsets.only(bottom: 20),
 
-      child: pw.Column(
-        crossAxisAlignment: pw.CrossAxisAlignment.start,
-
-        children: [
-
+      child: 
           pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
 
             children: [
-
               pw.Text(
-                'OwnAccounts',
+                'تطبيق\n حساباتي',
+                textAlign: pw.TextAlign.center,
                 style: pw.TextStyle(
                   fontSize: 24,
                   fontWeight: pw.FontWeight.bold,
                   color: PdfColors.blue800,
                 ),
               ),
+              pw.Image(pdfImage,
+                width: 80, // يمكنك التحكم بالعرض
+                height: 80, // يمكنك التحكم بالطول
+                fit: pw.BoxFit.contain, // طريقة احتواء الصورة
+              
+              ),
 
+      pw.Column(
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
+        children: [
               pw.Text(
                 'تاريخ التقرير: ${dateFormatter.format(DateTime.now())}',
                 style: const pw.TextStyle(
@@ -272,41 +283,42 @@ class PdfService {
                   color: PdfColors.grey700,
                 ),
               ),
-            ],
-          ),
-
-          pw.SizedBox(height: 8),
-
-          pw.Text(
-            cleanText(title),
-            style: pw.TextStyle(
-              fontSize: 16,
-              fontWeight: pw.FontWeight.bold,
-            ),
-          ),
+              pw.Text(
+                'نوع التقرير: $title',
+                style: const pw.TextStyle(
+                  fontSize: 10,
+                  color: PdfColors.grey700,
+                ),
+              ),
+          
 
           if (customerName != null)
             pw.Text(
               'العميل: ${cleanText(customerName)}',
               style: const pw.TextStyle(
-                fontSize: 12,
+                fontSize: 10,
                 color: PdfColors.grey700,
               ),
             ),
 
-          if (fromDate != null || toDate != null)
-            pw.Text(
-              'الفترة: ${fromDate != null ? dateFormatter.format(fromDate) : "..."} - ${toDate != null ? dateFormatter.format(toDate) : "..."}',
-              style: const pw.TextStyle(
-                fontSize: 12,
-                color: PdfColors.grey700,
-              ),
-            ),
-
-          pw.Divider(
-            color: PdfColors.blue800,
-            thickness: 2,
+          // if (fromDate != null || toDate != null)
+          //   pw.Text(
+          //     'الفترة: ${fromDate != null ? dateFormatter.format(fromDate) : "..."} - ${toDate != null ? dateFormatter.format(toDate) : "..."}',
+          //     style: const pw.TextStyle(
+          //       fontSize: 12,
+          //       color: PdfColors.grey700,
+          //     ),
+          //   ),
+            ],
           ),
+
+        //   pw.SizedBox(height: 8),
+
+
+        //   pw.Divider(
+        //     color: PdfColors.blue800,
+        //     thickness: 2,
+        //   ),
         ],
       ),
     );

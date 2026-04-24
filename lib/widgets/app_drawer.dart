@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/auth_controller.dart';
 import '../theme/app_theme.dart';
+import '../views/reports/reports_page.dart';
+import '../views/import_export/import_export_page.dart';
+import '../views/settings/settings_view.dart';
 
 class AppDrawer extends StatelessWidget {
   final int currentIndex;
@@ -25,12 +28,9 @@ class AppDrawer extends StatelessWidget {
         backgroundColor: AppColors.drawerBackground,
         child: Column(
           children: [
-            // Header
             _buildDrawerHeader(authController),
-            // Divider
             Divider(color: AppColors.drawerDivider, height: 1, thickness: 1),
             const SizedBox(height: 8),
-            // Menu Items
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -54,15 +54,6 @@ class AppDrawer extends StatelessWidget {
                     },
                   ),
                   _buildMenuItem(
-                    icon: Icons.assessment_rounded,
-                    label: 'التقارير',
-                    index: 2,
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      onItemSelected(2);
-                    },
-                  ),
-                  _buildMenuItem(
                     icon: Icons.people_rounded,
                     label: 'العملاء',
                     index: 3,
@@ -71,13 +62,27 @@ class AppDrawer extends StatelessWidget {
                       onItemSelected(3);
                     },
                   ),
+                  const SizedBox(height: 8),
+                  Divider(color: AppColors.drawerDivider, height: 1),
+                  const SizedBox(height: 8),
+                  // التقارير - تفتح واجهة جديدة
+                  _buildMenuItem(
+                    icon: Icons.assessment_rounded,
+                    label: 'التقارير',
+                    index: -1,
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      Get.to(() => const ReportsPage());
+                    },
+                  ),
+                  // التصدير والاستيراد - تفتح واجهة جديدة
                   _buildMenuItem(
                     icon: Icons.import_export_rounded,
                     label: 'التصدير والاستيراد',
-                    index: 4,
+                    index: -2,
                     onTap: () {
                       Navigator.of(context).pop();
-                      onItemSelected(4);
+                      Get.to(() => const ImportExportPage());
                     },
                   ),
                   const SizedBox(height: 8),
@@ -95,16 +100,15 @@ class AppDrawer extends StatelessWidget {
                   _buildMenuItem(
                     icon: Icons.settings_rounded,
                     label: 'الإعدادات',
-                    index: 6,
+                    index: -3,
                     onTap: () {
                       Navigator.of(context).pop();
-                      onItemSelected(6);
+                      Get.to(() => const SettingsView());
                     },
                   ),
                 ],
               ),
             ),
-            // Footer with Logout
             _buildDrawerFooter(context, authController),
           ],
         ),
@@ -130,7 +134,6 @@ class AppDrawer extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Logo
           Row(
             children: [
               Container(
@@ -185,7 +188,6 @@ class AppDrawer extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 20),
-          // User Info
           Obx(() {
             final user = authController.user.value;
             return Row(
@@ -353,7 +355,6 @@ class AppDrawer extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Version info
           const Padding(
             padding: EdgeInsets.only(bottom: 10),
             child: Text(
@@ -365,7 +366,6 @@ class AppDrawer extends StatelessWidget {
               ),
             ),
           ),
-          // Logout Button
           Material(
             color: Colors.transparent,
             child: InkWell(

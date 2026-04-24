@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../models/entry_model.dart';
+import '../theme/app_theme.dart';
 import 'auth_controller.dart';
 import 'entries_controller.dart';
 
@@ -95,7 +96,7 @@ class AddEntryController extends GetxController {
         .toList();
   }
 
-  Future<void> selectDate(BuildContext context) async {
+  Future<void> selectDate(BuildContext context,bool isDark) async {
     // 1. اختيار التاريخ أولاً
     final pickedDate = await showDatePicker(
       context: context,
@@ -105,8 +106,11 @@ class AddEntryController extends GetxController {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: Color(0xFF1565C0),
+            colorScheme: isDark? const ColorScheme.dark(
+              primary:AppColors.primaryLight,
+              onPrimary: AppColors.white,
+            ):const ColorScheme.light(
+              primary:AppColors.primaryLight,
               onPrimary: Colors.white,
             ),
           ),

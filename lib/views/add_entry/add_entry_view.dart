@@ -11,10 +11,12 @@ class AddEntryView extends StatelessWidget {
   final EntryModel? editEntry;
   final String? presetCustomerName;
 
-  const AddEntryView({super.key, this.editEntry, this.presetCustomerName});
-
+   AddEntryView({super.key, this.editEntry, this.presetCustomerName});
+   var isDark = false;
   @override
   Widget build(BuildContext context) {
+     isDark = Theme.of(context).brightness == Brightness.dark;
+
     final controller = Get.put(AddEntryController());
     if (editEntry != null) {
       controller.initForEdit(editEntry);
@@ -25,7 +27,7 @@ class AddEntryView extends StatelessWidget {
     return Directionality(
       textDirection: ui.TextDirection.rtl,
       child: Scaffold(
-        backgroundColor: AppColors.background,
+                  backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
         appBar: AppBar(
           backgroundColor: AppColors.primaryMedium,
           foregroundColor: Colors.white,
@@ -151,11 +153,16 @@ class AddEntryView extends StatelessWidget {
                                 decimal: true),
                             style: const TextStyle(
                                 fontSize: 22, fontWeight: FontWeight.bold),
+                                textDirection: ui.TextDirection.ltr,
+                                textAlign: ui.TextAlign.left,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly
+                                ],
                             decoration: InputDecoration(
-                              hintText: '0.00',
+                              hintText: ' المبلغ',
                               hintStyle:
                                   TextStyle(color: Colors.grey.shade400),
-                              prefixIcon: Container(
+                              suffixIcon: Container(
                                 width: 48,
                                 alignment: Alignment.center,
                                 child: Text(
@@ -170,7 +177,8 @@ class AddEntryView extends StatelessWidget {
                                 ),
                               ),
                               filled: true,
-                              fillColor: Colors.white,
+                              fillColor: isDark ? AppColors.darkCard : null,
+      
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
@@ -178,7 +186,7 @@ class AddEntryView extends StatelessWidget {
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide:
-                                    BorderSide(color: Colors.grey.shade200),
+                                    BorderSide(color:isDark?AppColors.darkDivider: Colors.grey.shade200),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
@@ -212,19 +220,19 @@ class AddEntryView extends StatelessWidget {
 _buildLabel('التاريخ والوقت *'), // تم تغيير العنوان
 const SizedBox(height: 8),
 Obx(() => InkWell(
-      onTap: () => controller.selectDate(context),
+      onTap: () => controller.selectDate(context,isDark),
       borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color:isDark?AppColors.darkCard: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey.shade200),
+          border: Border.all(color:isDark?AppColors.darkDivider: Colors.grey.shade200),
         ),
         child: Row(
           children: [
             const Icon(Icons.calendar_today_rounded,
-                color: Color(0xFF1565C0)),
+                color:  AppColors.primaryLight),
             const SizedBox(width: 12),
             // ✅ تم تعديل التنسيق هنا ليظهر الوقت (hh:mm a)
             Text(
@@ -344,7 +352,7 @@ Obx(() => InkWell(
       style: const TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w600,
-        color: Color(0xFF37474F),
+        //color: AppColors.primaryLight,
       ),
     );
   }
@@ -459,10 +467,13 @@ Obx(() => InkWell(
         Obx(() => TextFormField(
               controller: controller.customerController,
               scrollPadding: const EdgeInsets.only(bottom: 250),
+              // textAlign: ui.TextAlign.center,
+              // textDirection: ui.TextDirection.rtl,
               decoration: InputDecoration(
                 hintText: 'أدخل اسم العميل (اختياري)',
+                
                 hintStyle: TextStyle(color: Colors.grey.shade400),
-                prefixIcon: const Icon(Icons.person_rounded, color: Color(0xFF1565C0)),
+                prefixIcon: const Icon(Icons.person_rounded, color: AppColors.primaryLight),
                 suffixIcon: controller.customerSuggestions.isNotEmpty
                     ? IconButton(
                         icon: Icon(
@@ -483,14 +494,15 @@ Obx(() => InkWell(
                       )
                     : null,
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: isDark ? AppColors.darkCard : null,
+
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey.shade200),
+                  borderSide:                                    BorderSide(color:isDark?AppColors.darkDivider: Colors.grey.shade200),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -508,6 +520,15 @@ Obx(() => InkWell(
               onTap: () {
                 controller.updateFilteredCustomers(controller.customerController.text);
                 controller.showCustomerSuggestions.value = true;
+                final textLength = controller.customerController.text.length;
+    
+    // التحقق مما إذا كان المؤشر يقف قبل الحرف الأخير بحرف واحد
+                if (controller.customerController.selection.isCollapsed && 
+                    controller.customerController.selection.baseOffset == textLength - 1) {
+                      
+                  // إجبار المؤشر على الانتقال إلى نهاية النص تماماً
+                  controller.customerController.selection = TextSelection.collapsed(offset: textLength);
+                }
               },
             )),
         // قائمة الاقتراحات (تظهر وتختفي بناءً على المتغير)
@@ -537,7 +558,7 @@ Obx(() => InkWell(
                 hintStyle: TextStyle(color: Colors.grey.shade400),
                 prefixIcon: const Padding(
                   padding: EdgeInsets.only(bottom: 24),
-                  child: Icon(Icons.note_rounded, color: Color(0xFF1565C0)),
+                  child: Icon(Icons.note_rounded, color:  AppColors.primaryLight),
                 ),
                 suffixIcon: controller.noteSuggestions.isNotEmpty
                     ? Padding(
@@ -560,14 +581,15 @@ Obx(() => InkWell(
                       )
                     : null,
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: isDark ? AppColors.darkCard : Colors.white,
+
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey.shade200),
+                  borderSide:                                     BorderSide(color:isDark?AppColors.darkDivider: Colors.grey.shade200),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -609,9 +631,10 @@ Obx(() => InkWell(
       margin: const EdgeInsets.only(top: 4),
       constraints: const BoxConstraints(maxHeight: 180),
       decoration: BoxDecoration(
-        color: Colors.white,
+       color: isDark ? AppColors.darkCard : AppColors.cardBackground,
+      
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
+        //border: Border.all(color: Colors.grey.shade200),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.08),
@@ -624,7 +647,7 @@ Obx(() => InkWell(
         shrinkWrap: true,
         padding: const EdgeInsets.symmetric(vertical: 4),
         itemCount: filtered.length,
-        separatorBuilder: (_, __) => Divider(height: 1, color: Colors.grey.shade100),
+        separatorBuilder: (_, __) => Divider(height: 1, color:isDark?AppColors.darkDivider: Colors.grey.shade100),
         itemBuilder: (context, index) {
           final suggestion = filtered[index];
           return ListTile(

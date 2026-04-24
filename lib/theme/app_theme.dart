@@ -1,25 +1,25 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Primary Colors - من لوحة الهوية البصرية
-  static const Color primaryDark = Color(0xFF0F3D2E);    // أخضر أساسي داكن
-  static const Color primaryMedium = Color(0xFF166A4A);   // أخضر ثانوي
-  static const Color primaryLight = Color(0xFF22C55E);    // أخضر نجاح
-  static const Color primaryGradientEnd = Color(0xFF06261D); // تدرج أخضر داكن
+  // Primary Colors
+  static const Color primaryDark = Color(0xFF0F3D2E);
+  static const Color primaryMedium = Color(0xFF166A4A);
+  static const Color primaryLight = Color(0xFF22C55E);
+  static const Color primaryGradientEnd = Color(0xFF06261D);
 
   // Secondary Colors
-  static const Color darkGray = Color(0xFF22272A);        // رمادي داكن
-  static const Color mediumGray = Color(0xFF6B7280);      // رمادي متوسط
-  static const Color lightGray = Color(0xFFE5E7EB);       // رمادي فاتح
-  static const Color background = Color(0xFFF3F4F6);      // خلفية
-  static const Color white = Color(0xFFFFFFFF);           // أبيض
+  static const Color darkGray = Color(0xFF22272A);
+  static const Color mediumGray = Color(0xFF6B7280);
+  static const Color lightGray = Color(0xFFE5E7EB);
+  static const Color background = Color(0xFFF3F4F6);
+  static const Color white = Color(0xFFFFFFFF);
 
   // Semantic Colors
-  static const Color error = Color(0xFFEF4444);           // خطأ - أحمر
-  static const Color success = Color(0xFF22C55E);         // نجاح - أخضر
-  static const Color warning = Color(0xFFD4AF37);         // تحذير - ذهبي
-  static const Color errorDark = Color(0xFF8B1D24);       // أحمر داكن
-  static const Color errorLight = Color(0xFFFCE7E9);      // وردي فاتح
+  static const Color error = Color(0xFFEF4444);
+  static const Color success = Color(0xFF22C55E);
+  static const Color warning = Color(0xFFD4AF37);
+  static const Color errorDark = Color(0xFF8B1D24);
+  static const Color errorLight = Color(0xFFFCE7E9);
 
   // Card & Surface
   static const Color cardBackground = Color(0xFFFFFFFF);
@@ -41,6 +41,14 @@ class AppColors {
   static const Color bottomNavBackground = Color(0xFF0F3D2E);
   static const Color bottomNavActive = Color(0xFF22C55E);
   static const Color bottomNavInactive = Color(0xFF9DBFB4);
+
+  // Dark Theme Colors
+  static const Color darkBackground = Color(0xFF121212);
+  static const Color darkSurface = Color(0xFF1E1E1E);
+  static const Color darkCard = Color(0xFF252525);
+  static const Color darkDivider = Color(0xFF333333);
+  static const Color darkTextPrimary = Color(0xFFE0E0E0);
+  static const Color darkTextSecondary = Color(0xFF9E9E9E);
 
   // Gradient
   static const LinearGradient primaryGradient = LinearGradient(
@@ -84,8 +92,8 @@ class AppTheme {
       cardTheme: CardTheme(
         color: AppColors.cardBackground,
         elevation: 2,
-        shadowColor: Color(0x1A0F3D2E),
-        shape: RoundedRectangleBorder(
+        shadowColor: const Color(0x1A0F3D2E),
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(14)),
         ),
       ),
@@ -160,6 +168,116 @@ class AppTheme {
         backgroundColor: AppColors.primaryDark,
         selectedItemColor: AppColors.primaryLight,
         unselectedItemColor: AppColors.bottomNavInactive,
+        type: BottomNavigationBarType.fixed,
+      ),
+    );
+  }
+
+  static ThemeData get darkTheme {
+    return ThemeData(
+      colorScheme: ColorScheme.dark(
+        primary: AppColors.primaryLight,
+        secondary: AppColors.primaryMedium,
+        surface: AppColors.darkCard,
+        error: AppColors.error,
+        onSurface: AppColors.darkTextPrimary,
+        brightness: Brightness.dark,
+      ),
+      fontFamily: 'myfont',
+      useMaterial3: true,
+      scaffoldBackgroundColor: AppColors.darkBackground,
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Color(0xFF1A1A1A),
+        foregroundColor: AppColors.darkTextPrimary,
+        centerTitle: true,
+        elevation: 0,
+        titleTextStyle: TextStyle(
+          fontFamily: 'myfont',
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: AppColors.darkTextPrimary,
+        ),
+        iconTheme: IconThemeData(color: AppColors.darkTextPrimary),
+      ),
+      cardTheme: CardTheme(
+        color: AppColors.darkCard,
+        elevation: 2,
+        shadowColor: Colors.black26,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(14)),
+        ),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primaryMedium,
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          textStyle: const TextStyle(
+            fontFamily: 'myfont',
+            fontWeight: FontWeight.bold,
+            fontSize: 15,
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+          elevation: 2,
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: AppColors.primaryLight,
+          textStyle: const TextStyle(
+            fontFamily: 'myfont',
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: AppColors.darkSurface,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.darkDivider),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.darkDivider),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.primaryLight, width: 2),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.error),
+        ),
+        labelStyle: const TextStyle(color: AppColors.darkTextSecondary),
+        hintStyle: const TextStyle(color: AppColors.darkTextSecondary),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      ),
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        backgroundColor: AppColors.primaryLight,
+        foregroundColor: Colors.white,
+        elevation: 4,
+        shape: CircleBorder(),
+      ),
+      dividerTheme: const DividerThemeData(
+        color: AppColors.darkDivider,
+        thickness: 1,
+      ),
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: AppColors.darkCard,
+        contentTextStyle: const TextStyle(
+          fontFamily: 'myfont',
+          color: AppColors.darkTextPrimary,
+        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        behavior: SnackBarBehavior.floating,
+      ),
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        backgroundColor: Color(0xFF1A1A1A),
+        selectedItemColor: AppColors.primaryLight,
+        unselectedItemColor: AppColors.darkTextSecondary,
         type: BottomNavigationBarType.fixed,
       ),
     );

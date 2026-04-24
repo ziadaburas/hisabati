@@ -139,6 +139,27 @@ class GoogleDriveService {
     }
   }
 
+  // Delete all data from Google Drive
+  Future<bool> deleteAllData() async {
+    if (_accessToken == null) return false;
+    try {
+      final fileId = await _findFileId();
+      if (fileId == null) return true; // No file to delete
+
+      final response = await http.delete(
+        Uri.parse(
+          'https://www.googleapis.com/drive/v3/files/$fileId',
+        ),
+        headers: _headers,
+      );
+
+      return response.statusCode == 204 || response.statusCode == 200;
+    } catch (e) {
+      if (kDebugMode) debugPrint('Drive delete error: $e');
+      return false;
+    }
+  }
+
   // Check if we can reach Drive API
   Future<bool> isAvailable() async {
     if (_accessToken == null) return false;

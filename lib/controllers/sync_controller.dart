@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-import '/controllers/entries_controller.dart';
+import '../controllers/entries_controller.dart';
 import '../services/sync_service.dart';
 import '../services/database_service.dart';
 import '../services/google_drive_service.dart';
@@ -9,7 +9,7 @@ import '../services/connectivity_service.dart';
 
 class SyncController extends GetxController {
   final DatabaseService _db = DatabaseService();
-  final GoogleDriveService _drive = GoogleDriveService();
+  final GoogleDriveService driveService = GoogleDriveService();
   final ConnectivityService _connectivity = ConnectivityService();
 
   late final SyncService _syncService;
@@ -25,7 +25,7 @@ class SyncController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _syncService = SyncService(_db, _drive, _connectivity);
+    _syncService = SyncService(_db, driveService, _connectivity);
     _connectivity.init();
 
     // الاستماع لتغييرات الاتصال
@@ -47,7 +47,7 @@ class SyncController extends GetxController {
 
   void setAccessToken(String? token) {
     if (token != null) {
-      _drive.setAccessToken(token);
+      driveService.setAccessToken(token);
     }
   }
 
@@ -143,6 +143,25 @@ class SyncController extends GetxController {
     }
 
     isSyncing.value = false;
+  }
+
+  Future<void> deleteAllCloudData(String userId) async {
+    try {
+      syncState.value = SyncState.syncing;
+      syncMessage.value = 'جاري حذف البيانات السحابية...';
+      await driveService.deleteAllData();
+      syncState.value = SyncState.synced;
+      syncMessage.value = 'تم حذف البيانات السحابية';
+      Future.delayed(const Duration(seconds: 3), () {
+        if (syncState.value == SyncState.synced) {
+          syncMessage.value = '';
+        }
+      });
+    } catch (e) {
+      syncState.value = SyncState.error;
+      syncMessage.value = 'فشل حذف البيانات السحابية';
+      rethrow;
+    }
   }
 
   void reset() {

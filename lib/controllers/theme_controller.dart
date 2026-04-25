@@ -8,27 +8,14 @@ class ThemeController extends GetxController {
   // 0 = system, 1 = light, 2 = dark
   final RxInt themeValue = 0.obs;
 
-  ThemeMode get currentThemeMode {
-    switch (themeValue.value) {
-      case 1:
-        return ThemeMode.light;
-      case 2:
-        return ThemeMode.dark;
-      default:
-        return ThemeMode.system;
-    }
-  }
+  ThemeMode get currentThemeMode => switch (themeValue.value) {
+        1 => ThemeMode.light,
+        2 => ThemeMode.dark,
+        _ => ThemeMode.system
+      };
 
-  String get themeLabel {
-    switch (themeValue.value) {
-      case 1:
-        return 'فاتح';
-      case 2:
-        return 'داكن';
-      default:
-        return 'تبع النظام';
-    }
-  }
+  String get themeLabel =>
+      switch (themeValue.value) { 1 => 'فاتح', 2 => 'داكن', _ => 'تبع النظام' };
 
   @override
   void onInit() {

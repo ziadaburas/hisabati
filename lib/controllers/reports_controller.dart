@@ -13,28 +13,8 @@ class ReportsController extends GetxController {
   final Rx<DateTime?> fromDate = Rx<DateTime?>(null);
   final Rx<DateTime?> toDate = Rx<DateTime?>(null);
   final RxBool isGenerating = false.obs;
-  final reportsTitles ={
-    ReportType.all : 'كل القيود',
-    ReportType.customer : 'عميل محدد',
-    ReportType.period : 'فترة محددة',
-    ReportType.customerPeriod : 'عميل + فترة',
-  };
-/*
- _buildReportTypeCard(controller, ReportType.all,
-                                'كل القيود', Icons.receipt_long_rounded,
-                                'تقرير شامل لجميع القيود', isDark),
-                            _buildReportTypeCard(controller, ReportType.customer,
-                                'عميل محدد', Icons.person_rounded,
-                                'تقرير قيود عميل معين', isDark),
-                            _buildReportTypeCard(controller, ReportType.period,
-                                'فترة محددة', Icons.date_range_rounded,
-                                'تقرير قيود خلال فترة زمنية', isDark),
-                            _buildReportTypeCard(
-                                controller, ReportType.customerPeriod,
-                                'عميل + فترة', Icons.filter_alt_rounded,
-                                'تقرير عميل خلال فترة محددة', isDark),
-                          ],
-                          */
+
+
   List<String> get availableCustomers =>
       Get.find<EntriesController>().customerNames;
 
@@ -77,7 +57,12 @@ class ReportsController extends GetxController {
     return filtered;
   }
 
-  String get reportTitle => reportsTitles[reportType.value].toString();
+  String get reportTitle => switch(reportType.value){
+    ReportType.customer => 'عميل محدد',
+    ReportType.period => 'فترة محددة',
+    ReportType.customerPeriod => 'عميل + فترة',
+    _ => 'كل القيود',
+  };
 
   Future<void> selectFromDate(BuildContext context) async {
     final picked = await showDatePicker(

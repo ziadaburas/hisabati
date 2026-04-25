@@ -2,13 +2,13 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import '../controllers/auth_controller.dart';
 import '../controllers/entries_controller.dart';
 import '../controllers/home_controller.dart';
 import '../controllers/sync_controller.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_drawer.dart';
+import '../widgets/balance_header.dart';
 import '../widgets/sync_status_bar.dart';
 import 'add_entry_view.dart';
 import 'entries_view.dart';
@@ -225,36 +225,10 @@ class HomeView extends StatelessWidget {
                     color: Colors.white.withOpacity(0.1),
                   ),
                 ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: _buildBalanceItem(
-                        'لي ',
-                        entriesController.totalCredit,
-                        AppColors.primaryLight,
-                        Icons.arrow_upward_rounded,
-                      ),
-                    ),
-                    Container(width: 1, height: 42, color: Colors.white.withOpacity(0.2)),
-                    Expanded(
-                      child: _buildBalanceItem(
-                        'عليا',
-                        entriesController.totalDebit,
-                        const Color(0xFFFF8A80),
-                        Icons.arrow_downward_rounded,
-                      ),
-                    ),
-                    Container(width: 1, height: 42, color: Colors.white.withOpacity(0.2)),
-                    Expanded(
-                      child: _buildBalanceItem(
-                        'الرصيد',
-                        entriesController.totalBalance,
-                        Colors.white,
-                        Icons.account_balance_wallet_rounded,
-                      ),
-                    ),
-                  ],
-                ),
+                child: BalanceHeader(
+                totalCredit:entriesController.totalCredit,
+                totalDebit: entriesController.totalDebit,
+              ),
               ),
             )),
           ],
@@ -263,37 +237,11 @@ class HomeView extends StatelessWidget {
     );
   }
 
-  Widget _buildBalanceItem(String label, double amount, Color color, IconData icon) {
-    final formatter = NumberFormat('#,##0.##', 'en_US');
-    return Column(
-      children: [
-        Icon(icon, color: color.withOpacity(0.8), size: 14),
-        const SizedBox(height: 4),
-        Text(
-          formatter.format(amount),
-          style: TextStyle(
-            color: color,
-            fontSize: 15,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'myfont',
-          ),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          label,
-          style: TextStyle(
-            color: Colors.white.withOpacity(0.6),
-            fontSize: 10,
-            fontFamily: 'myfont',
-          ),
-          textAlign: TextAlign.center,
-        ),
-      ],
-    );
-  }
+  
 
   Widget _buildBottomNav(BuildContext context, HomeController homeController) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     // فقط القيود والعملاء
     final tabs = [
       {'icon': Icons.receipt_long_rounded, 'label': 'القيود', 'index': 1},

@@ -1,6 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../models/entry_model.dart';
 import '../services/database_service.dart';
+import '../theme/app_theme.dart';
+import 'auth_controller.dart';
 import 'sync_controller.dart';
 
 class EntriesController extends GetxController {
@@ -141,5 +144,46 @@ class EntriesController extends GetxController {
 
   void clearEntries() {
     entries.clear();
+  }
+  void confirmDelete(EntryModel entry) {
+    
+    final authController = Get.find<AuthController>();
+    final isDark = Theme.of(Get.context!).brightness == Brightness.dark;
+
+    Get.defaultDialog(
+      title: 'حذف القيد',
+      titleStyle: TextStyle(
+        fontWeight: FontWeight.bold,
+        fontFamily: 'myfont',
+        color: isDark ? AppColors.darkTextPrimary : null,
+      ),
+      middleText:
+          'هل أنت متأكد من حذف هذا القيد؟\n\n${entry.isCredit ? "لي" : "عليا"} - ${entry.amount}',
+      middleTextStyle: TextStyle(
+        fontFamily: 'myfont',
+        color: isDark ? AppColors.darkTextSecondary : null,
+      ),
+      backgroundColor: isDark ? AppColors.darkCard : Colors.white,
+      textConfirm: 'حذف',
+      textCancel: 'إلغاء',
+      confirmTextColor: Colors.white,
+      buttonColor: Colors.red,
+      cancelTextColor: AppColors.primaryMedium,
+      onConfirm: () {
+        final userId = authController.user.value?.uid;
+        if (userId != null) {
+          deleteEntry(userId, entry.id);
+          Get.back();
+          Get.snackbar(
+            'تم الحذف',
+            'تم حذف القيد بنجاح',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+            duration: const Duration(seconds: 2),
+          );
+        }
+      },
+    );
   }
 }

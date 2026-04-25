@@ -48,7 +48,7 @@ class _SplashViewState extends State<SplashView>
 
   Future<void> _checkAuthAndNavigate() async {
     final authController = Get.find<AuthController>();
-    await Future.delayed(const Duration(milliseconds: 5000));
+    await Future.delayed(const Duration(milliseconds: 500));
 
     while (!authController.isInitialCheckDone.value) {
       await Future.delayed(const Duration(milliseconds: 100));

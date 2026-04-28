@@ -51,6 +51,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "326847435666-37nl9itv9hcgm2pecedmtntielf38s84.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.own7x.hisabati",
+            "certificate_hash": "51711c30adee118b9f82d239c821ef1b2e9a3a69"
+          }
+        },
+        {
           "client_id": "326847435666-h1pi1oj7976k2rqqj7f00fe0ies3mghm.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
